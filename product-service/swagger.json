@@ -1,0 +1,100 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "2023-04-02T19:23:10Z",
+    "title": "dev-product-service"
+  },
+  "host": "rphckujr2g.execute-api.us-east-1.amazonaws.com",
+  "basePath": "/dev",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/products": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Returns array of products",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "count": {
+                    "type": "number",
+                    "description": "Available game count"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Game description"
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "Unique game identifier"
+                  },
+                  "price": {
+                    "type": "number",
+                    "description": "Game price"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Game type"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{productId}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns product by id",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "number",
+                  "description": "Available game count"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Game description"
+                },
+                "id": {
+                  "type": "string",
+                  "description": "Unique game identifier"
+                },
+                "price": {
+                  "type": "number",
+                  "description": "Game price"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Game type"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Returns error message",
+            "schema": {
+              "type": "string",
+              "description": "Product not found"
+            }
+          }
+        }
+      }
+    }
+  }
+}
