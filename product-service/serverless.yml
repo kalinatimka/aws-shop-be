@@ -13,17 +13,25 @@ custom:
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
+  PRODUCTS_DB_NAME: products
+  STOCKS_DB_NAME: stocks
 
 functions:
   getProductsList:
-    handler: getProductsList.handler
+    handler: handlers/getProductsList.handler
+    environment:
+      PRODUCTS_DB_NAME: ${self:custom.PRODUCTS_DB_NAME}
+      STOCKS_DB_NAME: ${self:custom.STOCKS_DB_NAME}
     events:
       - http:
           path: products
           method: get
           cors: true
   getProductsById:
-    handler: getProductsById.handler
+    handler: handlers/getProductsById.handler
+    environment:
+      PRODUCTS_DB_NAME: ${self:custom.PRODUCTS_DB_NAME}
+      STOCKS_DB_NAME: ${self:custom.STOCKS_DB_NAME}
     events:
       - http:
           path: products/{productId}
@@ -33,3 +41,13 @@ functions:
             parameters:
               paths:
                 productId: true
+  createProduct:
+    handler: handlers/createProduct.handler
+    environment:
+      PRODUCTS_DB_NAME: ${self:custom.PRODUCTS_DB_NAME}
+      STOCKS_DB_NAME: ${self:custom.STOCKS_DB_NAME}
+    events:
+      - http:
+          path: products
+          method: post
+          cors: true
