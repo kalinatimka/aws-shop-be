@@ -1,4 +1,4 @@
-import { handler } from '../getProductsById';
+import { handler } from '../handlers/getProductsById';
 import { products } from '../mocks/products.mock';
 
 

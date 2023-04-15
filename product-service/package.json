@@ -9,7 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "source-map-support": "^0.5.21"
+    "aws-sdk": "^2.1353.0",
+    "source-map-support": "^0.5.21",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",
