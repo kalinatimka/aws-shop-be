@@ -1,0 +1,44 @@
+service: import-service
+frameworkVersion: '3'
+
+custom:
+  PRODUCTS_BUCKET: kalinata-import-service
+  FOLDER_TO_UPLOAD: uploaded
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  profile: sandx
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: s3:ListBucket
+          Resource: arn:aws:s3:::${self:custom.PRODUCTS_BUCKET}
+        - Effect: Allow
+          Action: s3:*
+          Resource: arn:aws:s3:::${self:custom.PRODUCTS_BUCKET}/*
+  environment:
+    PRODUCTS_BUCKET: ${self:custom.PRODUCTS_BUCKET}
+    FOLDER_TO_UPLOAD: ${self:custom.FOLDER_TO_UPLOAD}
+
+functions:
+  importProductsFile:
+    handler: handlers/importProductsFile.handler
+    events:
+      - http:
+          path: import
+          method: get
+          request:
+            parameters:
+              querystrings:
+                name: true
+  importFileParser:
+    handler: handlers/importFileParser.handler
+    events:
+      - s3:
+          bucket: ${self:custom.PRODUCTS_BUCKET}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: ${self:custom.FOLDER_TO_UPLOAD}/
+          existing: true
