@@ -1,0 +1,16 @@
+service: authorization-service
+frameworkVersion: '3'
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  profile: sandx
+  environment:
+    GITHUB_USERNAME: ${env:GITHUB_USERNAME}
+    USER_PASSWORD: ${env:USER_PASSWORD}
+
+functions:
+  basicAuthorizer:
+    handler: handlers/basicAuthorizer.handler

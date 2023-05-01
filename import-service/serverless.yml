@@ -6,6 +6,18 @@ custom:
   FOLDER_TO_UPLOAD: uploaded
   CATALOG_ITEMS_QUEUE_URL: https://sqs.us-east-1.amazonaws.com/012536406137/product-service-catalog-items-queue
 
+resources:
+  Resources:
+    Unauthorized:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          "gatewayresponse.header.Access-Control-Allow-Origin": "'*'"
+          "gatewayresponse.header.Access-Control-Allow-Headers": "'*'"
+        ResponseType: "DEFAULT_4XX"
+        RestApiId:
+          Ref: "ApiGatewayRestApi"
+
 provider:
   name: aws
   runtime: nodejs18.x
@@ -38,6 +50,11 @@ functions:
             parameters:
               querystrings:
                 name: true
+          cors: true
+          authorizer:
+            type: request
+            arn: arn:aws:lambda:us-east-1:012536406137:function:authorization-service-dev-basicAuthorizer
+            resultTtlInSeconds: 0
   importFileParser:
     handler: handlers/importFileParser.handler
     events:
