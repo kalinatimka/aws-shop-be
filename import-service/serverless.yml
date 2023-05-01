@@ -4,6 +4,7 @@ frameworkVersion: '3'
 custom:
   PRODUCTS_BUCKET: kalinata-import-service
   FOLDER_TO_UPLOAD: uploaded
+  CATALOG_ITEMS_QUEUE_URL: https://sqs.us-east-1.amazonaws.com/012536406137/product-service-catalog-items-queue
 
 provider:
   name: aws
@@ -18,9 +19,13 @@ provider:
         - Effect: Allow
           Action: s3:*
           Resource: arn:aws:s3:::${self:custom.PRODUCTS_BUCKET}/*
+        - Effect: Allow
+          Action: sqs:*
+          Resource: arn:aws:sqs:*:*:product-service-catalog-items-queue
   environment:
     PRODUCTS_BUCKET: ${self:custom.PRODUCTS_BUCKET}
     FOLDER_TO_UPLOAD: ${self:custom.FOLDER_TO_UPLOAD}
+    CATALOG_ITEMS_QUEUE_URL: ${self:custom.CATALOG_ITEMS_QUEUE_URL}
 
 functions:
   importProductsFile:

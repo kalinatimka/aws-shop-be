@@ -5,6 +5,40 @@ provider:
   name: aws
   runtime: nodejs18.x
   profile: sandx
+  environment:
+    PRODUCTS_DB_NAME: products
+    STOCKS_DB_NAME: stocks
+    CREATE_PRODUCT_TOPIC_ARN:
+      Ref: createProductTopic
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: dynamodb:*
+          Resource: arn:aws:dynamodb:*:*:table/*
+        - Effect: Allow
+          Action: sns:*
+          Resource:
+            - Ref: createProductTopic
+
+resources:
+  Resources:
+    catalogItemsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:service}-catalog-items-queue
+    createProductTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:service}-create-product-topic
+    createProductTopicSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: kalinata0799@gmail.com
+        Protocol: email
+        TopicArn:
+          Ref: createProductTopic
 
 plugins:
   - serverless-webpack
@@ -13,15 +47,10 @@ custom:
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
-  PRODUCTS_DB_NAME: products
-  STOCKS_DB_NAME: stocks
 
 functions:
   getProductsList:
     handler: handlers/getProductsList.handler
-    environment:
-      PRODUCTS_DB_NAME: ${self:custom.PRODUCTS_DB_NAME}
-      STOCKS_DB_NAME: ${self:custom.STOCKS_DB_NAME}
     events:
       - http:
           path: products
@@ -29,9 +58,6 @@ functions:
           cors: true
   getProductsById:
     handler: handlers/getProductsById.handler
-    environment:
-      PRODUCTS_DB_NAME: ${self:custom.PRODUCTS_DB_NAME}
-      STOCKS_DB_NAME: ${self:custom.STOCKS_DB_NAME}
     events:
       - http:
           path: products/{productId}
@@ -43,11 +69,17 @@ functions:
                 productId: true
   createProduct:
     handler: handlers/createProduct.handler
-    environment:
-      PRODUCTS_DB_NAME: ${self:custom.PRODUCTS_DB_NAME}
-      STOCKS_DB_NAME: ${self:custom.STOCKS_DB_NAME}
     events:
       - http:
           path: products
           method: post
           cors: true
+  catalogBatchProcess:
+    handler: handlers/catalogBatchProcess.handler
+    events:
+      - sqs:
+          batchSize: 5
+          arn:
+            Fn::GetAtt:
+              - catalogItemsQueue
+              - Arn
